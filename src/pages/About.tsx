@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { MapPin, Phone, Mail, Heart, Users, BookOpen, Target } from 'lucide-react';
 import { images } from '../assets/images';
 
@@ -142,18 +143,18 @@ const About = () => {
             we invite you to be part of our community.
           </p>
           <div className="flex flex-wrap gap-4 justify-center">
-            <a
-              href="/contact"
+            <Link
+              to="/contact"
               className="bg-symposia-red text-white px-6 py-3 rounded-md hover:bg-symposia-orange transition-colors"
             >
               Get In Touch
-            </a>
-            <a
-              href="/events"
+            </Link>
+            <Link
+              to="/events"
               className="bg-symposia-yellow text-black px-6 py-3 rounded-md hover:bg-symposia-lime transition-colors"
             >
               View Events
-            </a>
+            </Link>
           </div>
         </div>
       </div>

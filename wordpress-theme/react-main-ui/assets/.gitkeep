@@ -1,0 +1,3 @@
+# Copy the contents of your React build's dist/assets/ folder here.
+# After running: npm run build
+# Copy: dist/assets/* -> wp-content/themes/react-main-ui/assets/

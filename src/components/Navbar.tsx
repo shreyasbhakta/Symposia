@@ -44,12 +44,12 @@ const Navbar = () => {
                 {item.name}
               </Link>
             ))}
-            <a
-              href="/shop-books"
+            <Link
+              to="/shop-books"
               className="bg-symposia-red text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-symposia-orange transition-colors"
             >
               Shop Books
-            </a>
+            </Link>
           </div>
 
           {/* Mobile menu button */}
@@ -79,13 +79,13 @@ const Navbar = () => {
                 {item.name}
               </Link>
             ))}
-            <a
-              href="/shop-books"
+            <Link
+              to="/shop-books"
               className="bg-symposia-red text-white block px-3 py-2 rounded-md text-base font-medium hover:bg-symposia-orange transition-colors"
               onClick={() => setIsOpen(false)}
             >
               Shop Books
-            </a>
+            </Link>
           </div>
         </div>
       )}

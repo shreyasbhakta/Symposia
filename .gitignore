@@ -1,6 +1,5 @@
 # dependencies
 /node_modules
 
-# build output (ReactPress uses build/, Vite default is dist/)
-/build
+# build output (copy dist/assets to wordpress-theme/react-main-ui/assets/)
 /dist

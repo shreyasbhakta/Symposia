@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { ThemeProvider } from './contexts/ThemeContext';
+import ErrorBoundary from './components/ErrorBoundary';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import Home from './pages/Home';
@@ -15,8 +16,9 @@ import ShopBooks from './pages/ShopBooks';
 
 function App() {
   return (
-    <ThemeProvider>
-      <Router>
+    <ErrorBoundary>
+      <ThemeProvider>
+        <Router>
         <div className="min-h-screen flex flex-col bg-white dark:bg-gray-900 transition-colors">
           <Navbar />
           <main className="flex-grow">
@@ -36,6 +38,7 @@ function App() {
         </div>
       </Router>
     </ThemeProvider>
+    </ErrorBoundary>
   );
 }
 
