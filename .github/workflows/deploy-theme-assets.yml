@@ -1,0 +1,54 @@
+# Build React and sync dist/assets to WordPress theme on the server.
+#
+# Setup (GitHub → Settings → Secrets → Actions):
+#   SSH_HOST              e.g. symposia.us
+#   SSH_USER              e.g. your_cpanel_user
+#   SSH_PRIVATE_KEY       PEM private key (full file contents)
+#   VITE_WORDPRESS_URL    e.g. https://wp.symposia.us
+#   REMOTE_THEME_ASSETS_PATH  absolute path to theme assets, e.g.
+#       /home/USER/public_html/wp-content/themes/react-main-ui/assets
+#
+# Optional: change branches below from `main` to `deploy` if you use a deploy branch.
+
+name: Deploy theme assets
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch: # manual “Run workflow” in GitHub Actions tab
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+
+      - name: Install and build
+        run: npm ci && VITE_DEPLOY_TARGET=root npm run build
+        env:
+          VITE_WORDPRESS_URL: ${{ secrets.VITE_WORDPRESS_URL }}
+
+      - name: Deploy assets via rsync
+        env:
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_USER: ${{ secrets.SSH_USER }}
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          REMOTE_THEME_ASSETS_PATH: ${{ secrets.REMOTE_THEME_ASSETS_PATH }}
+        run: |
+          if [ -z "$SSH_HOST" ] || [ -z "$SSH_USER" ] || [ -z "$SSH_PRIVATE_KEY" ] || [ -z "$REMOTE_THEME_ASSETS_PATH" ]; then
+            echo "Skipping deploy: set SSH_HOST, SSH_USER, SSH_PRIVATE_KEY, REMOTE_THEME_ASSETS_PATH in repo secrets."
+            exit 0
+          fi
+          mkdir -p ~/.ssh
+          echo "$SSH_PRIVATE_KEY" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -H "$SSH_HOST" >> ~/.ssh/known_hosts 2>/dev/null || true
+          rsync -avz --delete -e "ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=accept-new" \
+            dist/assets/ "${SSH_USER}@${SSH_HOST}:${REMOTE_THEME_ASSETS_PATH}/"

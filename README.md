@@ -1,6 +1,6 @@
 # Symposia Community Bookstore (Frontend)
 
-React + Vite + Tailwind frontend for Symposia. WordPress API and media use **`VITE_WORDPRESS_URL`** (default in code: **https://wp.symposia.us**). Deploy as a [WordPress theme](docs/DEPLOYMENT.md) or static host at the root.
+React + Vite + Tailwind frontend for Symposia. WordPress API and media use **`VITE_WORDPRESS_URL`** (default in code: **https://wp.symposia.us**). Deploy as a [WordPress theme](docs/DEPLOYMENT.md) or static host at the root. To sync **GitHub → server** automatically, see [docs/GITHUB-SERVER-SYNC.md](docs/GITHUB-SERVER-SYNC.md).
 
 ## Tech stack
 

@@ -134,3 +134,9 @@ Copy the new **`dist/assets/*`** into the theme’s **`assets/`** again.
 
 - **API or CORS**  
   Same origin (e.g. everything on **symposia.us**): no CORS. Public site on **symposia.us** and WordPress on **wp.symposia.us**: set **VITE_WORDPRESS_URL=https://wp.symposia.us** and enable CORS on WordPress for your front-end origin.
+
+---
+
+## Sync GitHub with the server
+
+See **[GITHUB-SERVER-SYNC.md](./GITHUB-SERVER-SYNC.md)** (GitHub Actions + rsync, or `git pull` on the server).
