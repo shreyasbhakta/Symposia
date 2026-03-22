@@ -12,7 +12,9 @@ On your local machine, in the project root:
 
 ```bash
 npm install
-npm run build
+cp .env.example .env   # then set VITE_WORDPRESS_URL if needed
+VITE_DEPLOY_TARGET=root npm run build
+# or: npm run build:production
 ```
 
 This produces a **`dist`** folder with:
@@ -41,7 +43,7 @@ Copy the entire **`wordpress-theme/react-main-ui`** folder from this repo into *
 
 Copy the **contents** of your local **`dist/assets`** folder into the theme’s **`assets`** folder on the server:
 
-- **From:** `dist/assets/*` (all `.js` and `.css files)
+- **From:** `dist/assets/*` (all `.js` and `.css` files)
 - **To:** `wp-content/themes/react-main-ui/assets/`
 
 So on the server you have e.g.:
@@ -69,22 +71,32 @@ The theme’s `functions.php` already includes a **template_redirect** hook that
 - **symposia.us/** → React app (home)
 - **symposia.us/events** → same shell, React Router shows Events
 - **symposia.us/about** → same shell, React Router shows About
-- **symposia.us/wp-json/...** → unchanged WordPress REST API
+- **symposia.us/wp-json/...** → unchanged WordPress REST API (if WordPress is on this domain). If WordPress lives at **wp.symposia.us**, the API is **https://wp.symposia.us/wp-json/...** instead.
 - **symposia.us/wp-admin** → unchanged WordPress admin
 
 No Nginx/Apache or .htaccess changes are required; everything is done inside the theme.
 
 ---
 
-## 6. API and env
+## 6. API and env (`VITE_WORDPRESS_URL`)
 
-The React app talks to WordPress via **`VITE_WORDPRESS_URL`** (see `src/api/wordpress.ts`). Default is **`https://symposia.us`**. Because the theme is served from the same domain, you usually don’t need to set this. If WordPress is on a different origin (e.g. a subdomain), set that URL when building:
+The React app talks to WordPress via **`VITE_WORDPRESS_URL`** (see `src/config/site.ts` and `src/api/wordpress.ts`). Put this in **`.env`** (copy from **`.env.example`**), e.g.:
 
-```bash
-VITE_WORDPRESS_URL=https://yoursite.com npm run build
+```env
+VITE_WORDPRESS_URL=https://wp.symposia.us
 ```
 
-Then copy the new **`dist/assets/*`** into the theme’s **`assets/`** again.
+Then build (production root build):
+
+```bash
+VITE_DEPLOY_TARGET=root npm run build
+```
+
+Copy the new **`dist/assets/*`** into the theme’s **`assets/`** again.
+
+**Same server as WordPress:** Yes. You can run **symposia.us** (public React/theme) and **wp.symposia.us** (WordPress) on the **same machine** with two virtual hosts (Apache/Nginx) pointing at the same or different document roots. DNS: **A** records for both hostnames to the same IP.
+
+**CORS:** If the browser loads the React app from **symposia.us** but the API is **wp.symposia.us**, that is **cross-origin**. WordPress must send CORS headers allowing **https://symposia.us** for `/wp-json` (e.g. a small mu-plugin or server config). If the React UI and WordPress share the **same** origin (e.g. both on **symposia.us**), CORS is not needed.
 
 ---
 
@@ -121,4 +133,4 @@ Then copy the new **`dist/assets/*`** into the theme’s **`assets/`** again.
   Ensure **React Main UI** is the active theme under **Appearance → Themes**.
 
 - **API or CORS**  
-  With the theme on the same domain as WordPress, the REST API is same-origin; no CORS change needed. If you later move the API to another domain, set **VITE_WORDPRESS_URL** and CORS on the API server.
+  Same origin (e.g. everything on **symposia.us**): no CORS. Public site on **symposia.us** and WordPress on **wp.symposia.us**: set **VITE_WORDPRESS_URL=https://wp.symposia.us** and enable CORS on WordPress for your front-end origin.

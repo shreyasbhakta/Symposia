@@ -1,5 +1,10 @@
 # dependencies
 /node_modules
 
+# local env (use .env.example as template)
+.env
+.env.local
+.env.*.local
+
 # build output (copy dist/assets to wordpress-theme/react-main-ui/assets/)
 /dist

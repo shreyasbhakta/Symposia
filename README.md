@@ -1,6 +1,6 @@
 # Symposia Community Bookstore (Frontend)
 
-React + Vite + Tailwind frontend for Symposia. It can run as a standalone site and pull content from WordPress (symposia.us) via the WordPress REST API.
+React + Vite + Tailwind frontend for Symposia. WordPress API and media use **`VITE_WORDPRESS_URL`** (default in code: **https://wp.symposia.us**). Deploy as a [WordPress theme](docs/DEPLOYMENT.md) or static host at the root.
 
 ## Tech stack
 
@@ -14,8 +14,10 @@ React + Vite + Tailwind frontend for Symposia. It can run as a standalone site a
 
 - `src/pages/` – Page routes (Home, Events, Community, Contact, etc.)
 - `src/components/` – Shared UI components (Navbar, carousel, etc.)
-- `src/assets/images.ts` – Central mapping for site images (logo, carousel, page images)
+- `src/config/site.ts` – `VITE_WORDPRESS_URL` helpers (API + uploads base)
+- `src/assets/images.ts` – Image paths under WordPress uploads (uses `site.ts`)
 - `src/api/wordpress.ts` – WordPress REST API client + event mapping
+- `wordpress-theme/react-main-ui/` – WordPress theme shell (optional deploy)
 
 ## Local development
 
@@ -41,10 +43,17 @@ Output goes to `dist/`.
 
 ## Environment variables
 
-Copy `.env.example` to `.env` and set your WordPress base URL:
+Copy `.env.example` to `.env` and set the WordPress origin (API + uploads), **no trailing slash**:
 
 ```env
-VITE_WORDPRESS_URL=https://symposia.us
+VITE_WORDPRESS_URL=https://wp.symposia.us
+```
+
+Production build (explicit root deploy):
+
+```bash
+VITE_DEPLOY_TARGET=root npm run build
+# or: npm run build:production
 ```
 
 ## WordPress integration
@@ -111,8 +120,9 @@ The newsletter “Subscribe” area is on the Contact page (`/contact#newsletter
 
 ## Key files to know
 
-- `index.html` – Sets the browser tab icon (favicon)
-- `src/assets/images.ts` – All site image URLs
+- `src/config/site.ts` – WordPress base URL from `VITE_WORDPRESS_URL`
+- `src/main.tsx` – Sets favicon from WordPress media (`getWordPressBaseUrl()`)
+- `src/assets/images.ts` – Image paths under WordPress uploads
 - `src/api/wordpress.ts` – WordPress REST API client + event mapping/filter support
 - `src/pages/Events.tsx` – Events UI + popup + “Stay Tuned!!”
 

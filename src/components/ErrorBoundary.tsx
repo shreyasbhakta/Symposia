@@ -1,4 +1,5 @@
 import React, { Component, ErrorInfo, ReactNode } from 'react';
+import { getWordPressBaseUrl } from '../config/site';
 
 interface Props {
   children: ReactNode;
@@ -30,6 +31,12 @@ class ErrorBoundary extends Component<Props, State> {
   render() {
     if (this.state.hasError && this.state.error) {
       const isRecaptcha = /recaptcha|Invalid domain for site key/i.test(this.state.error.message);
+      let wpHost = 'this site';
+      try {
+        wpHost = new URL(getWordPressBaseUrl()).host;
+      } catch {
+        /* ignore */
+      }
       return (
         <div className="min-h-screen bg-white dark:bg-gray-900 flex items-center justify-center p-6">
           <div className="max-w-md text-center">
@@ -40,7 +47,7 @@ class ErrorBoundary extends Component<Props, State> {
               {isRecaptcha ? (
                 <>
                   A security widget (reCAPTCHA) isn’t set up for this domain yet. The site owner
-                  can add <strong>symposia.us</strong> in the Google reCAPTCHA admin console.
+                  can add <strong>{wpHost}</strong> (and your public site domain) in the Google reCAPTCHA admin console.
                 </>
               ) : (
                 'The app hit an error. Try refreshing the page.'

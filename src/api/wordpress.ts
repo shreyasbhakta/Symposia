@@ -2,14 +2,14 @@
  * WordPress REST API client for Symposia Bookstore
  *
  * Setup:
- * 1. In project root, copy .env.example to .env and set:
- *    VITE_WORDPRESS_URL=https://symposia.us
+ * 1. Copy .env.example to .env and set VITE_WORDPRESS_URL (e.g. https://wp.symposia.us).
  * 2. On WordPress: ensure REST API is enabled (it is by default).
  * 3. For events: register a custom post type "events" with show_in_rest => true,
  *    or use posts in a category and we'll fetch those.
  */
 
-const WORDPRESS_URL = import.meta.env.VITE_WORDPRESS_URL || 'https://symposia.us';
+import { WORDPRESS_URL } from '../config/site';
+
 const API_BASE = `${WORDPRESS_URL}/wp-json/wp/v2`;
 
 /** Normalized event shape used by the app */

@@ -1,5 +1,9 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, HashRouter, Routes, Route } from 'react-router-dom';
+
+// Root deploy (default): BrowserRouter. ReactPress embed: VITE_DEPLOY_TARGET=reactpress + base './'
+const Router =
+  import.meta.env.VITE_DEPLOY_TARGET === 'reactpress' ? HashRouter : BrowserRouter;
 import { ThemeProvider } from './contexts/ThemeContext';
 import ErrorBoundary from './components/ErrorBoundary';
 import Navbar from './components/Navbar';

@@ -1,8 +1,10 @@
 /**
- * Image URLs from WordPress site (symposia.us)
+ * Image URLs from WordPress media library (same origin as VITE_WORDPRESS_URL).
  */
 
-const WP_BASE = 'https://symposia.us/wp-content/uploads';
+import { getWordPressUploadsBase } from '../config/site';
+
+const WP_BASE = getWordPressUploadsBase();
 
 export const images = {
   // Logo - Community Bookstore
