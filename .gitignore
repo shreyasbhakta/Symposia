@@ -1,6 +1,10 @@
 # dependencies
 /node_modules
 
+# local Python venv + sklearn data (scripts/nlp_chapter3_exercises.py)
+/.venv-ml
+/.sklearn_data
+
 # local env (use .env.example as template)
 .env
 .env.local
@@ -8,3 +12,4 @@
 
 # build output (copy dist/assets to wordpress-theme/react-main-ui/assets/)
 /dist
+.vercel
