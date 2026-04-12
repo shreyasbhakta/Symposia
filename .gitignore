@@ -11,5 +11,4 @@
 .env.*.local
 
 # build output (copy dist/assets to wordpress-theme/react-main-ui/assets/)
-/dist
 .vercel
