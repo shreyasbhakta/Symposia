@@ -206,8 +206,9 @@ export async function fetchEventsRaw(params?: { per_page?: number; page?: number
 }
 
 /**
- * Fetch events and map to app shape. If WordPress has no "events" CPT,
- * falls back to fetching recent posts (so you can use a category like "Events").
+ * Fetch events and map to app shape.
+ * If the events endpoint is unavailable, return an empty list so the UI can
+ * render its default "Stay Tuned" state.
  */
 export async function fetchEventsMapped(options: { fallbackImageUrl: string }): Promise<AppEvent[]> {
   let raw: WPPost[] = [];
@@ -218,13 +219,7 @@ export async function fetchEventsMapped(options: { fallbackImageUrl: string }): 
     raw = [];
   }
 
-  if (!raw || raw.length === 0) {
-    try {
-      raw = await fetchPosts({ per_page: 10, _embed: true });
-    } catch {
-      return [];
-    }
-  }
+  if (!raw || raw.length === 0) return [];
 
   return raw.map((wp) => mapWpPostToEvent(wp, options.fallbackImageUrl));
 }

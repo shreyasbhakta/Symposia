@@ -4,110 +4,24 @@ import { Calendar, Clock, MapPin } from 'lucide-react';
 import { images } from '../assets/images';
 import { fetchEventsMapped, type AppEvent } from '../api/wordpress';
 
-function buildDummyEvents(): AppEvent[] {
-  const now = new Date();
-  const mkStart = (daysFromNow: number, hours24: number, minutes: number) => {
-    const d = new Date(now);
-    d.setDate(d.getDate() + daysFromNow);
-    d.setHours(hours24, minutes, 0, 0);
-    return d;
-  };
-  const fmtDate = (d: Date) =>
-    d.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
-  const fmtTime = (d: Date) =>
-    d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
-
-  const starts = [
-    mkStart(7, 18, 30),
-    mkStart(10, 11, 0),
-    mkStart(14, 19, 0),
-    mkStart(18, 18, 0),
-    mkStart(24, 17, 0),
-    mkStart(30, 14, 0),
-  ];
-
-  return [
-    {
-      id: 1,
-      title: 'Author Talk: Local Writers Showcase',
-      date: fmtDate(starts[0]),
-      time: fmtTime(starts[0]),
-      location: 'Symposia Bookstore',
-      description: 'Join us for an evening with local authors as they share their latest works and writing journeys.',
-      image: images.logo,
-      category: 'Author Event',
-      start: starts[0].toISOString(),
-    },
-    {
-      id: 2,
-      title: "Children's Story Time",
-      date: fmtDate(starts[1]),
-      time: fmtTime(starts[1]),
-      location: 'Symposia Bookstore',
-      description: 'Bring your little ones for an interactive story time session with fun activities and snacks.',
-      image: images.logo,
-      category: "Children's Event",
-      start: starts[1].toISOString(),
-    },
-    {
-      id: 3,
-      title: 'Poetry Reading Night',
-      date: fmtDate(starts[2]),
-      time: fmtTime(starts[2]),
-      location: 'Symposia Bookstore',
-      description: 'An intimate evening of poetry readings featuring both established and emerging poets.',
-      image: images.logo,
-      category: 'Poetry',
-      start: starts[2].toISOString(),
-    },
-    {
-      id: 4,
-      title: 'Book Club Discussion: Contemporary Fiction',
-      date: fmtDate(starts[3]),
-      time: fmtTime(starts[3]),
-      location: 'Symposia Bookstore',
-      description: "Monthly book club meeting discussing this month's contemporary fiction selection.",
-      image: images.logo,
-      category: 'Book Club',
-      start: starts[3].toISOString(),
-    },
-    {
-      id: 5,
-      title: 'Community Art Exhibition Opening',
-      date: fmtDate(starts[4]),
-      time: fmtTime(starts[4]),
-      location: 'Symposia Bookstore',
-      description: 'Celebrate local artists with the opening of our monthly community art exhibition.',
-      image: images.logo,
-      category: 'Art Event',
-      start: starts[4].toISOString(),
-    },
-    {
-      id: 6,
-      title: 'Writing Workshop: Getting Started',
-      date: fmtDate(starts[5]),
-      time: fmtTime(starts[5]),
-      location: 'Symposia Bookstore',
-      description: 'A beginner-friendly workshop for aspiring writers to learn the basics of creative writing.',
-      image: images.logo,
-      category: 'Workshop',
-      start: starts[5].toISOString(),
-    },
-  ];
+function getTodayStartMs(): number {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  return today.getTime();
 }
 
-function isFutureEvent(event: AppEvent, nowMs: number): boolean {
+function isOnOrAfterToday(event: AppEvent, todayStartMs: number): boolean {
   if (event.start) {
     const ms = Date.parse(event.start);
-    if (!Number.isNaN(ms)) return ms >= nowMs;
+    if (!Number.isNaN(ms)) return ms >= todayStartMs;
   }
   const msFromDisplay = Date.parse(event.date);
-  if (!Number.isNaN(msFromDisplay)) return msFromDisplay >= nowMs;
-  return true;
+  if (!Number.isNaN(msFromDisplay)) return msFromDisplay >= todayStartMs;
+  return false;
 }
 
 const Events = () => {
-  const [events, setEvents] = useState<AppEvent[]>(() => buildDummyEvents());
+  const [events, setEvents] = useState<AppEvent[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedEvent, setSelectedEvent] = useState<AppEvent | null>(null);
 
@@ -116,10 +30,10 @@ const Events = () => {
     setLoading(true);
     fetchEventsMapped({ fallbackImageUrl: images.logo })
       .then((data) => {
-        if (!cancelled && data.length > 0) setEvents(data);
+        if (!cancelled) setEvents(data);
       })
       .catch(() => {
-        if (!cancelled) setEvents(buildDummyEvents());
+        if (!cancelled) setEvents([]);
       })
       .finally(() => {
         if (!cancelled) setLoading(false);
@@ -129,12 +43,10 @@ const Events = () => {
     };
   }, []);
 
-  const futureEvents = useMemo(() => {
-    const nowMs = Date.now();
-    const hasAnyStart = events.some((e) => typeof e.start === 'string' && e.start.length > 0);
+  const upcomingEvents = useMemo(() => {
+    const todayStartMs = getTodayStartMs();
     const filtered = events.filter((e) => {
-      if (hasAnyStart) return Boolean(e.start) && isFutureEvent(e, nowMs);
-      return isFutureEvent(e, nowMs);
+      return isOnOrAfterToday(e, todayStartMs);
     });
     return filtered.sort((a, b) => {
       const aMs = a.start ? Date.parse(a.start) : Date.parse(a.date);
@@ -161,7 +73,7 @@ const Events = () => {
         )}
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {!loading && futureEvents.length === 0 && (
+          {!loading && upcomingEvents.length === 0 && (
             <div className="lg:col-span-3 md:col-span-2 col-span-1 text-center py-16">
               <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-3">Stay Tuned!!</h2>
               <p className="text-gray-600 dark:text-gray-300">
@@ -171,7 +83,7 @@ const Events = () => {
           )}
 
           {!loading &&
-            futureEvents.map((event) => (
+            upcomingEvents.map((event) => (
               <div
                 key={event.id}
                 className="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow cursor-pointer"
