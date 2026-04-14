@@ -1,6 +1,6 @@
 # Symposia Community Bookstore (Frontend)
 
-React + Vite + Tailwind frontend for Symposia. WordPress API and media use **`VITE_WORDPRESS_URL`** (default in code: **https://wp.symposia.us**). Deploy as a [WordPress theme](docs/DEPLOYMENT.md) or static host at the root. To sync **GitHub → server** automatically, see [docs/GITHUB-SERVER-SYNC.md](docs/GITHUB-SERVER-SYNC.md).
+React + Vite + Tailwind frontend for Symposia. WordPress API and media use **`VITE_WORDPRESS_URL`** (default in code: **https://symposia.us**). Deploy as a [WordPress theme](docs/DEPLOYMENT.md) or static host at the root. To sync **GitHub → server** automatically, see [docs/GITHUB-SERVER-SYNC.md](docs/GITHUB-SERVER-SYNC.md).
 
 ## Tech stack
 
@@ -46,7 +46,7 @@ Output goes to `dist/`.
 Copy `.env.example` to `.env` and set the WordPress origin (API + uploads), **no trailing slash**:
 
 ```env
-VITE_WORDPRESS_URL=https://wp.symposia.us
+VITE_WORDPRESS_URL=https://symposia.us
 ```
 
 Production build (explicit root deploy):
@@ -71,8 +71,9 @@ This frontend reads content from WordPress using the REST API.
 The Events page:
 
 - Fetches events from WordPress.
-- Shows **only future events** when the API provides an event start date in custom fields.
+- Shows events from **today onward**.
 - If no events are available after filtering, it shows: **“Stay Tuned!!”**
+- If the events API fails, it keeps the same default **“Stay Tuned!!”** state.
 - Clicking **Learn More** opens a **popup** with event details (no redirect).
 - If an event has no featured image, it shows the **Symposia logo** as the event image.
 

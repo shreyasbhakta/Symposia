@@ -1,7 +1,7 @@
 /**
- * WordPress site origin (API + media). Set VITE_WORDPRESS_URL in .env (e.g. https://wp.symposia.us).
+ * WordPress site origin (API + media). Set VITE_WORDPRESS_URL in .env (e.g. https://symposia.us).
  */
-const DEFAULT_WORDPRESS_URL = 'https://wp.symposia.us';
+const DEFAULT_WORDPRESS_URL = 'https://symposia.us';
 
 export function getWordPressBaseUrl(): string {
   const raw = import.meta.env.VITE_WORDPRESS_URL;
